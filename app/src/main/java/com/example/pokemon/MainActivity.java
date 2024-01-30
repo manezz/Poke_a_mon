@@ -2,10 +2,13 @@ package com.example.pokemon;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.DownloadManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -34,8 +37,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     LinearLayout searchBar;
     ImageButton searchButton;
     Spinner searchResultSpinner;
-    RequestQueue requestQueue;
-    List<PokemonCard> cards;
+    public static RequestQueue requestQueue;
+    List<EveryCards> cards;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         requestQueue = Volley.newRequestQueue(this);
         searchButton.setOnClickListener(this);
         getAllCards();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     private void initGui(){
@@ -59,8 +67,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         if (cards == null) return;
 
-        List<PokemonCard> searchList = new ArrayList<>();
-        for (PokemonCard pc : cards) {
+        List<EveryCards> searchList = new ArrayList<>();
+        for (EveryCards pc : cards) {
             if (pc.name.toLowerCase().contains(searchField.getText().toString().toLowerCase())) {
                 searchList.add(pc);
             }
@@ -68,24 +76,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         createSpinner(searchList);
     }
 
-    private void createSpinner(List<PokemonCard> pcList){
-        List<String> pcNames = pcList.stream().map((pokemonCard) ->
-                        pokemonCard.name + " " + pokemonCard.id).collect(Collectors.toList());
+    private void createSpinner(List<EveryCards> pcList){
+        List<String> pcNames = pcList.stream().map((EveryCards) -> EveryCards.name + ":" + EveryCards.id)
+                .collect(Collectors.toList());
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_dropdown_item, pcNames);
         searchResultSpinner.setAdapter(adapter);
+
+
+        searchResultSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            boolean firstTime = true;
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int index, long i) {
+                if (firstTime) {
+                    firstTime = false;
+                    return;
+                }
+
+                String id = pcNames.get(index).split(":")[1];
+                Intent intent = new Intent(view.getContext(), CardActivity.class);
+                intent.putExtra("id", id);
+                startActivity(intent);
+
+//                startActivity(new Intent(view.getContext(), CardActivity.class)
+//                        .putExtra("id", pcNames.get(index)));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
     private void getAllCards() {
         String url = "https://api.tcgdex.net/v2/en/cards";
 
         StringRequest request = new StringRequest(Request.Method.GET, url, response -> {
-            cards = new Gson().fromJson(response, new TypeToken<List<PokemonCard>>(){}.getType());
+            cards = new Gson().fromJson(response, new TypeToken<List<EveryCards>>() {
+            }.getType());
+            Toast.makeText(this, "Cards: " + cards.size(), Toast.LENGTH_LONG).show();
             searchBar.setVisibility(View.VISIBLE);
             Log.d("Cards", String.valueOf(cards.size()));
-        }, error -> {
-            Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show();
-        });
+        }, error -> Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show()
+        );
         requestQueue.add(request);
     }
 }

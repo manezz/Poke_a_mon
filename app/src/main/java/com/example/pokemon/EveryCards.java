@@ -1,6 +1,6 @@
 package com.example.pokemon;
 
-public class PokemonCard {
+public class EveryCards {
         public String id;
         public String localId;
         public String name;
