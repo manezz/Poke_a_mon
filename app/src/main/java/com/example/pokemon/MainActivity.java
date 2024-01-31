@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageButton searchButton;
     Spinner searchResultSpinner;
     public static RequestQueue requestQueue;
-    List<EveryCards> cards;
+    static List<EveryCards> cards;
     public Button playPokemonButton;
     ActivityResultLauncher<Intent> secondActivityLauncher;
 
@@ -73,11 +73,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         requestQueue = Volley.newRequestQueue(this);
         searchButton.setOnClickListener(this);
+        getAllCards();
         playPokemonButton.setOnClickListener(v -> {
             onClickPlayPokemon(v);
         });
-
-        getAllCards();
     }
 
     @Override
@@ -108,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void onClickPlayPokemon(View v) {
         Intent intent = new Intent(MainActivity.this, PlayPokemonActivity.class);
+        //intent.putExtra("cards", (CharSequence) cards);
 
         secondActivityLauncher.launch(intent);
     }

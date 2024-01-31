@@ -4,6 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PlayPokemonActivity">
+    tools:context=".PlayPokemonActivity"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/player1_pokemon_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/player1_pokemon_img"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/player1_pokemon_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>
