@@ -3,14 +3,18 @@ package com.example.pokemon;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
 
 public class CardActivity extends AppCompatActivity {
+
+    Card card;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,10 +30,17 @@ public class CardActivity extends AppCompatActivity {
         String url = "https://api.tcgdex.net/v2/en/cards/" + id;
 
         StringRequest request = new StringRequest(Request.Method.GET, url, response -> {
-            Card card = new Gson().fromJson(response, Card.class);
+            card = new Gson().fromJson(response, Card.class);
             ((TextView)findViewById(R.id.tv_name)).setText(card.name);
+            getImage();
         }, error -> Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show()
         );
         MainActivity.requestQueue.add(request);
+    }
+
+    private void getImage() {
+        ImageView cardImage = findViewById(R.id.img_card);
+        Picasso.get().load(card.image+"/high.jpg").into(cardImage);
+
     }
 }

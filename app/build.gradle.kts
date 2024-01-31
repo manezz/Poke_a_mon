@@ -40,4 +40,5 @@ dependencies {
     implementation("com.android.volley:volley:1.2.1")
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.squareup.picasso:picasso:2.8")
 }
