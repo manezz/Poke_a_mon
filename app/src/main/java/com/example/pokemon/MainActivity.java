@@ -1,5 +1,9 @@
 package com.example.pokemon;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -10,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -39,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Spinner searchResultSpinner;
     public static RequestQueue requestQueue;
     List<EveryCards> cards;
+    public Button playPokemonButton;
+    ActivityResultLauncher<Intent> secondActivityLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +53,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         initGui();
 
+        secondActivityLauncher = registerForActivityResult
+                (
+                        new ActivityResultContracts.StartActivityForResult(),
+                        new ActivityResultCallback<ActivityResult>()
+                        {
+                            @Override
+                            public void onActivityResult(ActivityResult result)
+                            {
+                                if(result.getResultCode() == Activity.RESULT_OK)
+                                {
+                                    Intent intent = result.getData();
+                                    //String strFromSecond = intent.getStringExtra(MainActivity.TEXT_FROM_SECOND);
+                                    //nameColor.setText(strFromSecond);
+                                }
+                            }
+                        }
+                );
+
         requestQueue = Volley.newRequestQueue(this);
         searchButton.setOnClickListener(this);
+        playPokemonButton.setOnClickListener(v -> {
+            onClickPlayPokemon(v);
+        });
+
         getAllCards();
     }
 
@@ -61,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         searchButton = findViewById(R.id.btn_search);
         searchResultSpinner = findViewById(R.id.sp_search_result);
         searchBar = findViewById(R.id.ll_searchbar);
+        playPokemonButton = findViewById(R.id.btn_play_pokemon);
     }
 
     @Override
@@ -74,6 +104,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         createSpinner(searchList);
+    }
+
+    public void onClickPlayPokemon(View v) {
+        Intent intent = new Intent(MainActivity.this, PlayPokemonActivity.class);
+
+        secondActivityLauncher.launch(intent);
     }
 
     private void createSpinner(List<EveryCards> pcList){
@@ -98,9 +134,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent = new Intent(view.getContext(), CardActivity.class);
                 intent.putExtra("id", id);
                 startActivity(intent);
-
-//                startActivity(new Intent(view.getContext(), CardActivity.class)
-//                        .putExtra("id", pcNames.get(index)));
             }
 
             @Override
