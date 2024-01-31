@@ -41,6 +41,5 @@ public class CardActivity extends AppCompatActivity {
     private void getImage() {
         ImageView cardImage = findViewById(R.id.img_card);
         Picasso.get().load(card.image+"/high.jpg").into(cardImage);
-
     }
 }
