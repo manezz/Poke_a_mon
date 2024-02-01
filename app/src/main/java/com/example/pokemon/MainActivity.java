@@ -120,7 +120,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 this, android.R.layout.simple_spinner_dropdown_item, pcNames);
         searchResultSpinner.setAdapter(adapter);
 
-
         searchResultSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             boolean firstTime = true;
             @Override
