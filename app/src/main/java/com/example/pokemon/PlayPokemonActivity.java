@@ -2,7 +2,6 @@ package com.example.pokemon;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,8 +16,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class PlayPokemonActivity extends AppCompatActivity implements View.OnClickListener {
@@ -53,28 +50,24 @@ public class PlayPokemonActivity extends AppCompatActivity implements View.OnCli
         Random rand = new Random();
         for (int i = 0; i < 10; i++) {
             int randomIndex = rand.nextInt(MainActivity.cards.size());
-            player.otherCards.add(MainActivity.cards.get(randomIndex));
+            player.playerCards.add(MainActivity.cards.get(randomIndex));
         }
     }
 
     private void getNewPlayerCard(PokemonPlayer player) {
         Random rand = new Random();
         int randomIndex = rand.nextInt(MainActivity.cards.size());
-        player.otherCards.set(player.index, MainActivity.cards.get(randomIndex));
-        Log.d("otherCards", String.valueOf(player.otherCards.size()));
-        Log.d("otherCardsIndex", player.otherCards.get(player.index).name);
-        Log.d("otherCardsNextIndex", player.otherCards.get(player.index).name);
+        player.playerCards.set(player.index, MainActivity.cards.get(randomIndex));
         getCard(player);
     }
 
     private void getCard(PokemonPlayer player) {
-        String url = "https://api.tcgdex.net/v2/en/cards/" + player.otherCards.get(player.index).id;
+        String url = "https://api.tcgdex.net/v2/en/cards/" + player.playerCards.get(player.index).id;
         StringRequest request = new StringRequest(Request.Method.GET, url, response -> {
             try {
                 Card card = new Gson().fromJson(response, Card.class);
                 ((TextView) findViewById(R.id.player1_pokemon_name)).setText(card.name);
                 getImage(card);
-                Log.d("player", String.valueOf(player.index) +" " + player.otherCards.get(player1.index).name);
                 player1Btn.setText(String.valueOf(player.index+1));
                 player.index++;
             } catch (JsonSyntaxException e) {
