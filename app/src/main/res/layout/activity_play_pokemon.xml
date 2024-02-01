@@ -7,23 +7,52 @@
     tools:context=".PlayPokemonActivity"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/player1_pokemon_name"
-        android:textSize="32sp"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/player2_pokemon_name"
+            android:textSize="32sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-    <ImageView
-        android:id="@+id/player1_pokemon_img"
-        android:layout_gravity="center_horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        <ImageView
+            android:id="@+id/player2_pokemon_img"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
-    <Button
-        android:id="@+id/player1_pokemon_btn"
-        android:text="0"
-        android:textSize="32sp"
+        <Button
+            android:id="@+id/player2_pokemon_btn"
+            android:text="0"
+            android:textSize="32sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/player1_pokemon_name"
+            android:textSize="32sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <ImageView
+            android:id="@+id/player1_pokemon_img"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/player1_pokemon_btn"
+            android:text="0"
+            android:textSize="32sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
 </LinearLayout>

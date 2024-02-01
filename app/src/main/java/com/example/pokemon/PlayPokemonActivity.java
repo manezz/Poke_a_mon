@@ -18,11 +18,12 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Random;
 
-public class PlayPokemonActivity extends AppCompatActivity implements View.OnClickListener {
+public class PlayPokemonActivity extends AppCompatActivity {
 
     PokemonPlayer player1 = new PokemonPlayer();
-    //List<EveryCards> ecList = new ArrayList<EveryCards>();
+    PokemonPlayer player2 = new PokemonPlayer();
     Button player1Btn;
+    Button player2Btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,19 +31,29 @@ public class PlayPokemonActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.activity_play_pokemon);
 
         player1Btn = findViewById(R.id.player1_pokemon_btn);
+        player2Btn = findViewById(R.id.player1_pokemon_btn);
 
-        player1Btn.setOnClickListener(this);
+        player1Btn.setOnClickListener(v -> {
+            onPlayer1BtnClick(v);
+        });
+        player2Btn.setOnClickListener(v -> {
+            onPlayer2BtnClick(v);
+        });
 
         setupPlayerCards(player1);
     }
 
-    @Override
-    public void onClick(View v) {
+    public void onPlayer1BtnClick(View v) {
         if (player1.index < 10) {
-//            getCard(player1.otherCards.get(player1.index).id);
+            player1Btn.setText(String.valueOf(player1.index+1));
             getCard(player1);
-            //player1.index++;
-            //player1Btn.setText(String.valueOf(player1.index));
+        }
+    }
+
+    public void onPlayer2BtnClick(View v) {
+        if (player1.index < 10) {
+            player1Btn.setText(String.valueOf(player1.index+1));
+            getCard(player2);
         }
     }
 
@@ -68,7 +79,6 @@ public class PlayPokemonActivity extends AppCompatActivity implements View.OnCli
                 Card card = new Gson().fromJson(response, Card.class);
                 ((TextView) findViewById(R.id.player1_pokemon_name)).setText(card.name);
                 getImage(card);
-                player1Btn.setText(String.valueOf(player.index+1));
                 player.index++;
             } catch (JsonSyntaxException e) {
                 getNewPlayerCard(player);
