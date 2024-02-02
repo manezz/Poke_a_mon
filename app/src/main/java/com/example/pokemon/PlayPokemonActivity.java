@@ -97,6 +97,10 @@ public class PlayPokemonActivity extends AppCompatActivity {
             getCard(player);
         } else {
             vs.setText(player.playerName + " LOSE");
+            player1.pokemonAttack.setEnabled(false);
+            player2.pokemonAttack.setEnabled(false);
+            player1.drawCard.setEnabled(false);
+            player2.drawCard.setEnabled(false);
         }
     }
 
