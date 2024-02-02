@@ -22,52 +22,85 @@ public class PlayPokemonActivity extends AppCompatActivity {
 
     PokemonPlayer player1 = new PokemonPlayer();
     PokemonPlayer player2 = new PokemonPlayer();
-    Button player1Btn;
-    Button player2Btn;
+    TextView vs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_pokemon);
 
-        player1Btn = findViewById(R.id.player1_pokemon_btn);
-        player2Btn = findViewById(R.id.player2_pokemon_btn);
+        vs = findViewById(R.id.vs);
 
-        TextView player1PokemonName = findViewById(R.id.player1_pokemon_name);
-        player1.pokemonName = player1PokemonName;
-        TextView player2PokemonName = findViewById(R.id.player2_pokemon_name);
-        player2.pokemonName = player2PokemonName;
+        player1.playerName = "Player 1";
+        player2.playerName = "Player 2";
 
-        ImageView player1CardImage = findViewById(R.id.player1_pokemon_img);
-        player1.cardImage = player1CardImage;
-        ImageView player2CardImage = findViewById(R.id.player2_pokemon_img);
-        player2.cardImage = player2CardImage;
+        player1.drawCard = findViewById(R.id.player1_pokemon_btn);
+        player2.drawCard = findViewById(R.id.player2_pokemon_btn);
 
-        player1Btn.setOnClickListener(v -> {
-            onPlayer1BtnClick(v);
+        player1.pokemonName = findViewById(R.id.player1_pokemon_name);
+        player2.pokemonName = findViewById(R.id.player2_pokemon_name);
+
+        player1.cardImage = findViewById(R.id.player1_pokemon_img);
+        player2.cardImage = findViewById(R.id.player2_pokemon_img);
+
+        player1.pokemonHp = findViewById(R.id.player1_pokemon_hp);
+        player2.pokemonHp = findViewById(R.id.player2_pokemon_hp);
+
+        player1.pokemonAttack = findViewById(R.id.player1_pokemon_Attack);
+        player2.pokemonAttack = findViewById(R.id.player2_pokemon_Attack);
+
+        player1.pokemonAttack.setOnClickListener(v -> {
+            onPlayer1PokemonAttack(v);
         });
-        player2Btn.setOnClickListener(v -> {
-            onPlayer2BtnClick(v);
+        player2.pokemonAttack.setOnClickListener(v -> {
+            onPlayer2PokemonAttack(v);
+        });
+
+        player1.drawCard.setOnClickListener(v -> {
+            onPlayerBtnClick(v, player1);
+        });
+        player2.drawCard.setOnClickListener(v -> {
+            onPlayerBtnClick(v, player2);
         });
 
         setupPlayerCards(player1);
         setupPlayerCards(player2);
     }
 
-    public void onPlayer1BtnClick(View v) {
-        if (player1.index < 10) {
-            player1Btn.setText(String.valueOf(player1.index+1));
-            getCard(player1);
+    public void onPlayerBtnClick(View v, PokemonPlayer player) {
+        playerIndexCheck(player);
+    }
+
+    // Checks if pokemon dead
+    public void onPlayer1PokemonAttack(View v) {
+        player2.currentCard.currentHp -= player1.currentCard.attacks.get(0).damage;
+        getHp(player2);
+        pokemonDeadCheck(player2);
+    }
+
+    public void onPlayer2PokemonAttack(View v) {
+        player1.currentCard.currentHp -= player2.currentCard.attacks.get(0).damage;
+        getHp(player1);
+        pokemonDeadCheck(player1);
+    }
+
+    private void pokemonDeadCheck(PokemonPlayer player) {
+        if (player.currentCard.currentHp <= 0) {
+            playerIndexCheck(player);
         }
     }
 
-    public void onPlayer2BtnClick(View v) {
-        if (player2.index < 10) {
-            player2Btn.setText(String.valueOf(player2.index+1));
-            getCard(player2);
+    //Checks player index and if player have lost
+    private void playerIndexCheck(PokemonPlayer player) {
+        if (player.index < 10) {
+            player.drawCard.setText("Draw " + (player.index+1) + "/10");
+            getCard(player);
+        } else {
+            vs.setText(player.playerName + " LOSE");
         }
     }
 
+    // gets random cards for at new deck
     private void setupPlayerCards(PokemonPlayer player) {
         Random rand = new Random();
         for (int i = 0; i < 10; i++) {
@@ -76,6 +109,7 @@ public class PlayPokemonActivity extends AppCompatActivity {
         }
     }
 
+    // replaces a card with a new random one
     private void getNewPlayerCard(PokemonPlayer player) {
         Random rand = new Random();
         int randomIndex = rand.nextInt(MainActivity.cards.size());
@@ -83,16 +117,23 @@ public class PlayPokemonActivity extends AppCompatActivity {
         getCard(player);
     }
 
+    // gets new player card
     private void getCard(PokemonPlayer player) {
         String url = "https://api.tcgdex.net/v2/en/cards/" + player.playerCards.get(player.index).id;
         StringRequest request = new StringRequest(Request.Method.GET, url, response -> {
             try {
                 Card card = new Gson().fromJson(response, Card.class);
-//                ((TextView) findViewById(R.id.player1_pokemon_name)).setText(card.name);
-                player.pokemonName.setText(card.name);
-                getImage(card, player);
+                card.currentHp = card.hp;
+                player.currentCard = card;
+                getPokemonName(player);
+                getAttack(player);
+                getHp(player);
+                getImage(player);
                 player.index++;
+//            } catch (JsonSyntaxException NullPointerException) {
             } catch (JsonSyntaxException e) {
+                getNewPlayerCard(player);
+            } catch (NullPointerException e) {
                 getNewPlayerCard(player);
             }
         }, error -> {
@@ -102,7 +143,24 @@ public class PlayPokemonActivity extends AppCompatActivity {
         MainActivity.requestQueue.add(request);
     }
 
-    private void getImage(Card card, PokemonPlayer player) {
-        Picasso.get().load(card.image + "/high.jpg").into(player.cardImage);
+    private void getPokemonName(PokemonPlayer player) {
+        player.pokemonName.setText(player.currentCard.name);
+    }
+
+    // get the attack and checks if both players have drawn their card
+    private void getAttack(PokemonPlayer player) {
+        player.pokemonAttack.setText("DMG " + player.currentCard.attacks.get(0).damage);
+        if (player1.currentCard != null && player2.currentCard != null) {
+            player1.pokemonAttack.setEnabled(true);
+            player2.pokemonAttack.setEnabled(true);
+        }
+    }
+
+    private void getHp(PokemonPlayer player) {
+        player.pokemonHp.setText("HP " + player.currentCard.currentHp + "/" + player.currentCard.hp);
+    }
+
+    private void getImage(PokemonPlayer player) {
+        Picasso.get().load(player.currentCard.image + "/high.jpg").into(player.cardImage);
     }
 }
