@@ -31,7 +31,17 @@ public class PlayPokemonActivity extends AppCompatActivity {
         setContentView(R.layout.activity_play_pokemon);
 
         player1Btn = findViewById(R.id.player1_pokemon_btn);
-        player2Btn = findViewById(R.id.player1_pokemon_btn);
+        player2Btn = findViewById(R.id.player2_pokemon_btn);
+
+        TextView player1PokemonName = findViewById(R.id.player1_pokemon_name);
+        player1.pokemonName = player1PokemonName;
+        TextView player2PokemonName = findViewById(R.id.player2_pokemon_name);
+        player2.pokemonName = player2PokemonName;
+
+        ImageView player1CardImage = findViewById(R.id.player1_pokemon_img);
+        player1.cardImage = player1CardImage;
+        ImageView player2CardImage = findViewById(R.id.player2_pokemon_img);
+        player2.cardImage = player2CardImage;
 
         player1Btn.setOnClickListener(v -> {
             onPlayer1BtnClick(v);
@@ -41,6 +51,7 @@ public class PlayPokemonActivity extends AppCompatActivity {
         });
 
         setupPlayerCards(player1);
+        setupPlayerCards(player2);
     }
 
     public void onPlayer1BtnClick(View v) {
@@ -51,8 +62,8 @@ public class PlayPokemonActivity extends AppCompatActivity {
     }
 
     public void onPlayer2BtnClick(View v) {
-        if (player1.index < 10) {
-            player1Btn.setText(String.valueOf(player1.index+1));
+        if (player2.index < 10) {
+            player2Btn.setText(String.valueOf(player2.index+1));
             getCard(player2);
         }
     }
@@ -77,8 +88,9 @@ public class PlayPokemonActivity extends AppCompatActivity {
         StringRequest request = new StringRequest(Request.Method.GET, url, response -> {
             try {
                 Card card = new Gson().fromJson(response, Card.class);
-                ((TextView) findViewById(R.id.player1_pokemon_name)).setText(card.name);
-                getImage(card);
+//                ((TextView) findViewById(R.id.player1_pokemon_name)).setText(card.name);
+                player.pokemonName.setText(card.name);
+                getImage(card, player);
                 player.index++;
             } catch (JsonSyntaxException e) {
                 getNewPlayerCard(player);
@@ -90,8 +102,7 @@ public class PlayPokemonActivity extends AppCompatActivity {
         MainActivity.requestQueue.add(request);
     }
 
-    private void getImage(Card card) {
-        ImageView cardImage = findViewById(R.id.player1_pokemon_img);
-        Picasso.get().load(card.image + "/high.jpg").into(cardImage);
+    private void getImage(Card card, PokemonPlayer player) {
+        Picasso.get().load(card.image + "/high.jpg").into(player.cardImage);
     }
 }
