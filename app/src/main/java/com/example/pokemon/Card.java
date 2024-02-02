@@ -14,6 +14,7 @@ public class Card {
     public Variants variants;
     public ArrayList<Integer> dexId;
     public int hp;
+    public int currentHp;
     public ArrayList<String> types;
     public String evolveFrom;
     public String stage;
